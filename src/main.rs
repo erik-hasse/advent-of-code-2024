@@ -17,7 +17,7 @@ struct Cli {
     input: std::path::PathBuf,
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> anyhow::Result<()> {
     let args = Cli::parse();
     match args.problem {
         Problem::Day1A => {

@@ -1,9 +1,10 @@
+use itertools::Itertools;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::BufRead;
 use std::path::PathBuf;
 
-fn read_numbers(input: &PathBuf) -> Result<(Vec<i32>, Vec<i32>), Box<dyn std::error::Error>> {
+fn read_numbers(input: &PathBuf) -> anyhow::Result<(Vec<i32>, Vec<i32>)> {
     let file = File::open(input)?;
     let reader = std::io::BufReader::new(file);
     let mut list1: Vec<i32> = Vec::with_capacity(1000);
@@ -24,7 +25,7 @@ fn read_numbers(input: &PathBuf) -> Result<(Vec<i32>, Vec<i32>), Box<dyn std::er
     Ok((list1, list2))
 }
 
-pub fn part_a(input: &PathBuf) -> Result<i32, Box<dyn std::error::Error>> {
+pub fn part_a(input: &PathBuf) -> anyhow::Result<i32> {
     let (mut list1, mut list2) = read_numbers(input)?;
 
     list1.sort();
@@ -32,12 +33,12 @@ pub fn part_a(input: &PathBuf) -> Result<i32, Box<dyn std::error::Error>> {
 
     Ok(list1
         .into_iter()
-        .zip(list2.into_iter())
+        .zip_eq(list2.into_iter())
         .map(|(x, y)| (x - y).abs())
         .sum())
 }
 
-pub fn part_b(input: &PathBuf) -> Result<i32, Box<dyn std::error::Error>> {
+pub fn part_b(input: &PathBuf) -> anyhow::Result<i32> {
     let (list1, list2): (Vec<i32>, Vec<i32>) = read_numbers(input)?;
 
     let mut counts = HashMap::new();
