@@ -21,28 +21,32 @@ fn read_numbers(input: &PathBuf) -> anyhow::Result<Vec<Vec<i8>>> {
     Ok(list)
 }
 
-fn validate_report(report: &Vec<i8>) -> bool {
-    let diffs: Vec<i8> = report
-        .into_iter()
+fn validate_report(report: &[i8]) -> bool {
+    let is_ascending = report.is_sorted_by(|a, b| a < b);
+    let is_descending = report.is_sorted_by(|a, b| a > b);
+    let in_bounds = report
+        .iter()
         .tuple_windows()
-        .map(|(a, b)| b - a)
-        .collect();
-    (diffs.iter().all(|&x| x < 0) || diffs.iter().all(|&x| x > 0))
-        && (diffs.iter().map(|&x| x.abs()).max().unwrap_or(0) <= MAX_DIFF)
+        .all(|(a, b)| (a - b).abs() <= MAX_DIFF);
+    (is_ascending || is_descending) && in_bounds
 }
 
-fn validate_dampend_report(report: &Vec<i8>) -> bool {
-    (0..report.len())
-        .map(|i| [&report[..i], &report[i + 1..]].concat())
-        .any(|x| validate_report(&x))
+fn validate_dampend_report(report: &[i8]) -> bool {
+    (0..report.len()).any(|i| {
+        let (left, right) = report.split_at(i);
+        validate_report(&[left, &right[1..]].concat())
+    })
 }
 
 pub fn part_a(input: &PathBuf) -> anyhow::Result<i32> {
     let list = read_numbers(input)?;
-    Ok(list.into_iter().filter(validate_report).count() as i32)
+    Ok(list.into_iter().filter(|x| validate_report(x)).count() as i32)
 }
 
 pub fn part_b(input: &PathBuf) -> anyhow::Result<i32> {
     let list = read_numbers(input)?;
-    Ok(list.into_iter().filter(validate_dampend_report).count() as i32)
+    Ok(list
+        .into_iter()
+        .filter(|x| validate_dampend_report(x))
+        .count() as i32)
 }
