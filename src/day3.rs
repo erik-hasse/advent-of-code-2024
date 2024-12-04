@@ -1,13 +1,8 @@
 use regex::Regex;
-use std::fs::File;
-use std::io::Read;
-use std::path::PathBuf;
+use std::path::Path;
 
-fn read_to_string(input: &PathBuf) -> anyhow::Result<String> {
-    let mut file = File::open(input)?;
-    let mut contents = String::new();
-    file.read_to_string(&mut contents)?;
-    Ok(contents)
+fn read_to_string(input: &Path) -> anyhow::Result<String> {
+    std::fs::read_to_string(input).map_err(Into::into)
 }
 
 fn find_mul_strings(contents: &str) -> anyhow::Result<Vec<(u16, u16)>> {
@@ -26,30 +21,20 @@ fn score_strings(contents: &str) -> anyhow::Result<u32> {
     Ok(list.into_iter().map(|(a, b)| a as u32 * b as u32).sum())
 }
 
-pub fn part_a(input: &PathBuf) -> anyhow::Result<u32> {
+pub fn part_a(input: &Path) -> anyhow::Result<u32> {
     let contents = read_to_string(input)?;
     score_strings(&contents)
 }
 
-pub fn part_b(input: &PathBuf) -> anyhow::Result<u32> {
-    let contents = read_to_string(input)?;
-    let mut start = 0;
-    let mut score = 0;
-    loop {
-        let end = contents[start..].find("don't()");
-        if let Some(end) = end {
-            let curr = &contents[start..start + end];
-            score += score_strings(curr)?;
-            let new_start = contents[start + end..].find("do()");
-            if let Some(new_start) = new_start {
-                start = start + end + new_start;
-            } else {
-                break;
-            }
-        } else {
-            score += score_strings(&contents[start..])?;
-            break;
-        }
-    }
-    Ok(score)
+pub fn part_b(input: &Path) -> anyhow::Result<u32> {
+    // Insert a do() at the start to make processing easier
+    let contents = format!("do(){}", read_to_string(input)?);
+
+    contents
+        .split("don't()")
+        .into_iter()
+        .try_fold(0, |score, x| {
+            let (_, enabled) = x.split_once("do()").unwrap_or(("", ""));
+            Ok(score + score_strings(enabled)?)
+        })
 }
