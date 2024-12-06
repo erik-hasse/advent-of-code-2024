@@ -30,11 +30,8 @@ pub fn part_b(input: &Path) -> anyhow::Result<u32> {
     // Insert a do() at the start to make processing easier
     let contents = format!("do(){}", read_to_string(input)?);
 
-    contents
-        .split("don't()")
-        .into_iter()
-        .try_fold(0, |score, x| {
-            let (_, enabled) = x.split_once("do()").unwrap_or(("", ""));
-            Ok(score + score_strings(enabled)?)
-        })
+    contents.split("don't()").try_fold(0, |score, x| {
+        let (_, enabled) = x.split_once("do()").unwrap_or(("", ""));
+        Ok(score + score_strings(enabled)?)
+    })
 }
