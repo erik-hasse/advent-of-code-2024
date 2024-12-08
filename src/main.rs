@@ -5,6 +5,7 @@ mod day4;
 mod day5;
 mod day6;
 mod day7;
+mod day8;
 
 use clap::{Parser, ValueEnum};
 
@@ -24,6 +25,8 @@ enum Problem {
     Day6B,
     Day7A,
     Day7B,
+    Day8A,
+    Day8B,
 }
 
 #[derive(Parser)]
@@ -79,6 +82,12 @@ fn main() -> anyhow::Result<()> {
         }
         Problem::Day7B => {
             println!("{:?}", day7::part_b(&args.input)?);
+        }
+        Problem::Day8A => {
+            println!("{:?}", day8::part_a(&args.input)?);
+        }
+        Problem::Day8B => {
+            println!("{:?}", day8::part_b(&args.input)?);
         }
     }
     Ok(())
