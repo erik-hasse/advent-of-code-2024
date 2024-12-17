@@ -6,6 +6,7 @@ mod day13;
 mod day14;
 mod day15;
 mod day16;
+mod day17;
 mod day2;
 mod day3;
 mod day4;
@@ -52,6 +53,8 @@ enum Problem {
     Day15B,
     Day16A,
     Day16B,
+    Day17A,
+    Day17B,
 }
 
 #[derive(Parser)]
@@ -161,6 +164,12 @@ fn main() -> anyhow::Result<()> {
         }
         Problem::Day16B => {
             println!("{:?}", day16::part_b(&args.input)?);
+        }
+        Problem::Day17A => {
+            println!("{:?}", day17::part_a(&args.input)?);
+        }
+        Problem::Day17B => {
+            println!("{:?}", day17::part_b(&args.input)?);
         }
     }
     Ok(())
